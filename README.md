@@ -161,26 +161,9 @@ export PATH=$PATH:~/Library/Python/3.13/bin
 ansible-inventory -i inventory.ini --list
 ```
 
-**Ожидаемый результат:**
-```json
-{
-    "_meta": {
-        "hostvars": {
-            "managed1": {
-                "ansible_host": "localhost",
-                "ansible_port": "2222",
-                "ansible_user": "ansible",
-                ...
-            }
-        }
-    },
-    "all": {...},
-    "managed_hosts": {
-        "hosts": ["managed1"]
-    },
-    "ungrouped": {}
-}
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767054-y](https://github.com/user-attachments/assets/836b8b2a-5a56-4e75-afbe-d12e05d9a17f)
+
 
 ### Шаг 1.3: Выполнение ping к управляемому хосту
 
@@ -188,19 +171,13 @@ ansible-inventory -i inventory.ini --list
 ansible -i inventory.ini managed_hosts -m ping
 ```
 
-**Ожидаемый результат:**
-```
-managed1 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767076-y](https://github.com/user-attachments/assets/6859d348-2ec9-4b0b-ba8e-a3df0016b666)
 
-✅ **Задание 1 выполнено!** Вы успешно подключились к управляемому хосту через Ansible.
 
 ---
 
-## 📝 Задание 2: Базовые ad-hoc команды
+## Задание 2: Базовые ad-hoc команды
 
 ### Цель задания
 Научиться выполнять базовые команды на удалённых хостах с помощью Ansible ad-hoc команд.
@@ -211,15 +188,9 @@ managed1 | SUCCESS => {
 ansible -i inventory.ini managed1 -m setup -a "filter=ansible_processor_cores"
 ```
 
-**Ожидаемый результат:**
-```json
-managed1 | SUCCESS => {
-    "ansible_facts": {
-        "ansible_processor_cores": 4
-    },
-    "changed": false
-}
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767076-y](https://github.com/user-attachments/assets/3473931a-e523-4d62-b6dd-f4d018d5723c)
+
 
 **Объяснение:**
 - `-m setup` — использует модуль setup для сбора информации о системе
@@ -231,14 +202,8 @@ managed1 | SUCCESS => {
 ansible -i inventory.ini managed1 -m command -a "df -h"
 ```
 
-**Ожидаемый результат:**
-```
-managed1 | CHANGED | rc=0 >>
-Filesystem      Size  Used Avail Use% Mounted on
-overlay         20G   5.2G   14G  28% /
-tmpfs            64M     0   64M   0% /dev
-...
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767094-y](https://github.com/user-attachments/assets/0f8ef269-b6ad-4126-beb7-d65689e2e95d)
 
 **Объяснение:**
 - `-m command` — использует модуль command для выполнения произвольной команды
@@ -250,14 +215,9 @@ tmpfs            64M     0   64M   0% /dev
 ansible -i inventory.ini managed1 -m command -a "cat /etc/passwd"
 ```
 
-**Ожидаемый результат:**
-```
-managed1 | CHANGED | rc=0 >>
-root:x:0:0:root:/root:/bin/bash
-daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
-ansible:x:1000:1000::/home/ansible:/bin/bash
-...
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767097-y](https://github.com/user-attachments/assets/c38f78b5-9b11-45eb-8fc1-7b4052aa0832)
+
 
 **Объяснение:**
 - Команда выводит содержимое файла `/etc/passwd`, который содержит информацию о всех пользователях системы
@@ -268,10 +228,9 @@ ansible:x:1000:1000::/home/ansible:/bin/bash
 ansible -i inventory.ini managed1 -m command -a "timedatectl set-timezone UTC" -b
 ```
 
-**Ожидаемый результат:**
-```
-managed1 | CHANGED | rc=0 >>
-```
+**Результат:**
+<img width="686" height="67" alt="telegram-cloud-document-2-5323654938834800251" src="https://github.com/user-attachments/assets/ed8fb9be-11e6-454d-9ae9-731fa2d0506d" />
+
 
 **Объяснение:**
 - `-b` (или `--become`) — выполнение команды с правами суперпользователя (sudo)
@@ -292,61 +251,26 @@ managed1 | CHANGED | rc=0 >>
 ...
 ```
 
-✅ **Задание 2 выполнено!** Вы успешно выполнили все ad-hoc команды без ошибок.
+
 
 ---
 
-## 📝 Задание 3: Работа с файлами
+## Задание 3: Работа с файлами
 
 ### Цель задания
 Создать playbook для автоматизации работы с файлами и директориями на управляемом хосте.
 
 ### Шаг 3.1: Проверка playbook `task3_files.yml`
 
-Файл `task3_files.yml` уже создан. Проверьте его содержимое:
+Файл `task3_files.yml` уже создан. 
 
 ```bash
 cat task3_files.yml
 ```
 
 **Содержимое файла:**
-```yaml
----
-- name: Work with files
-  hosts: managed_hosts
-  tasks:
-    - name: Create multiple directories
-      file:
-        path: /tmp/{{ item }}
-        state: directory
-        mode: '0755'
-      loop:
-        - test_dir1
-        - test_dir2
-        - test_dir3
+![telegram-cloud-photo-size-2-5323654939294767112-y](https://github.com/user-attachments/assets/16e16ce4-046f-476e-a234-9cdad960265b)
 
-    - name: Create files in directories
-      copy:
-        content: "This is {{ item }} file\n"
-        dest: /tmp/{{ item }}/content.txt
-      loop:
-        - test_dir1
-        - test_dir2
-        - test_dir3
-
-    - name: Display files
-      command: cat /tmp/{{ item }}/content.txt
-      loop:
-        - test_dir1
-        - test_dir2
-        - test_dir3
-      register: file_content
-
-    - name: Show file contents
-      debug:
-        msg: "{{ item.stdout }}"
-      loop: "{{ file_content.results }}"
-```
 
 **Объяснение структуры playbook:**
 - `name` — название playbook
@@ -362,12 +286,10 @@ cat task3_files.yml
 ansible-playbook -i inventory.ini task3_files.yml --syntax-check
 ```
 
-**Ожидаемый результат:**
-```
-playbook: task3_files.yml
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767113-y](https://github.com/user-attachments/assets/fa093e54-81f8-4034-a4fa-da610b6f6ebf)
 
-Если синтаксис корректен, ошибок не будет.
+
 
 ### Шаг 3.3: Запуск playbook
 
@@ -375,42 +297,8 @@ playbook: task3_files.yml
 ansible-playbook -i inventory.ini task3_files.yml
 ```
 
-**Ожидаемый результат:**
-```
-PLAY [managed_hosts] ************************************************************
-
-TASK [Gathering Facts] **********************************************************
-ok: [managed1]
-
-TASK [Create multiple directories] **********************************************
-changed: [managed1] => (item=test_dir1)
-changed: [managed1] => (item=test_dir2)
-changed: [managed1] => (item=test_dir3)
-
-TASK [Create files in directories] **********************************************
-changed: [managed1] => (item=test_dir1)
-changed: [managed1] => (item=test_dir2)
-changed: [managed1] => (item=test_dir3)
-
-TASK [Display files] ************************************************************
-changed: [managed1] => (item=test_dir1)
-changed: [managed1] => (item=test_dir2)
-changed: [managed1] => (item=test_dir3)
-
-TASK [Show file contents] *******************************************************
-ok: [managed1] => (item={'item': 'test_dir1', 'stdout': 'This is test_dir1 file', ...}) => {
-    "msg": "This is test_dir1 file"
-}
-ok: [managed1] => (item={'item': 'test_dir2', 'stdout': 'This is test_dir2 file', ...}) => {
-    "msg": "This is test_dir2 file"
-}
-ok: [managed1] => (item={'item': 'test_dir3', 'stdout': 'This is test_dir3 file', ...}) => {
-    "msg": "This is test_dir3 file"
-}
-
-PLAY RECAP **********************************************************************
-managed1                   : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-```
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767118-y](https://github.com/user-attachments/assets/92f714b4-9202-4633-bb5d-5656966e55f4)
 
 ### Шаг 3.4: Проверка созданных файлов на управляемом хосте
 
@@ -422,12 +310,6 @@ ssh -i ~/.ssh/ansible_key -p 2222 ansible@localhost "ls -la /tmp/test_dir*"
 ansible -i inventory.ini managed1 -m command -a "ls -la /tmp/test_dir*"
 ```
 
-**Ожидаемый результат:**
-```
-drwxr-xr-x 2 ansible ansible 4096 ... test_dir1
-drwxr-xr-x 2 ansible ansible 4096 ... test_dir2
-drwxr-xr-x 2 ansible ansible 4096 ... test_dir3
-```
 
 **Проверка содержимого файлов:**
 ```bash
@@ -436,19 +318,11 @@ ansible -i inventory.ini managed1 -m command -a "cat /tmp/test_dir2/content.txt"
 ansible -i inventory.ini managed1 -m command -a "cat /tmp/test_dir3/content.txt"
 ```
 
-**Ожидаемый результат:**
-```
-managed1 | CHANGED | rc=0 >>
-This is test_dir1 file
+**Результат:**
+![telegram-cloud-photo-size-2-5323654939294767119-y](https://github.com/user-attachments/assets/ab61be80-32b9-4d93-9abe-f25f21c92ebe)
 
-managed1 | CHANGED | rc=0 >>
-This is test_dir2 file
 
-managed1 | CHANGED | rc=0 >>
-This is test_dir3 file
-```
 
-✅ **Задание 3 выполнено!** Три директории с файлами успешно созданы на управляемом хосте.
 
 ---
 
@@ -658,4 +532,3 @@ The task includes an option with an undefined variable
 
 ---
 
-**Успешного выполнения лабораторной работы! 🎉**
