@@ -1,0 +1,21 @@
+services:
+  managed-host:
+    container_name: ansible-managed-host
+    build: .
+    ports:
+      - "2222:22"
+    environment:
+      - TERM=xterm-256color
+    networks:
+      - ansible-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "service", "ssh", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  ansible-net:
+    driver: bridge
+

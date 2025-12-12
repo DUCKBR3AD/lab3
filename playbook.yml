@@ -1,0 +1,56 @@
+---
+- name: Демонстрационный playbook для Ansible
+  hosts: managed_hosts
+  gather_facts: yes
+  
+  tasks:
+    - name: Обновление списка пакетов
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      become: yes
+
+    - name: Установка требуемых пакетов
+      apt:
+        name:
+          - curl
+          - wget
+          - git
+          - nano
+        state: present
+      become: yes
+
+    - name: Создание тестовой директории
+      file:
+        path: /tmp/ansible_test
+        state: directory
+        mode: '0755'
+
+    - name: Создание тестового файла с содержимым
+      copy:
+        content: |
+          Hello from Ansible!
+          This is a test file created by Ansible playbook.
+          Hostname: {{ ansible_hostname }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Date: {{ ansible_date_time.iso8601 }}
+        dest: /tmp/ansible_test/test_file.txt
+        mode: '0644'
+
+    - name: Вывод содержимого файла
+      command: cat /tmp/ansible_test/test_file.txt
+      register: file_content
+
+    - name: Отображение содержимого файла
+      debug:
+        msg: "{{ file_content.stdout }}"
+
+    - name: Сбор информации о системе
+      debug:
+        msg: |
+          System: {{ ansible_system }}
+          Hostname: {{ ansible_hostname }}
+          Uptime: {{ ansible_uptime_seconds }} seconds
+          CPU cores: {{ ansible_processor_cores }}
+          Total memory: {{ ansible_memtotal_mb }} MB
+
